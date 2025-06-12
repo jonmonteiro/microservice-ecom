@@ -10,25 +10,26 @@ import estoque_service.entities.StockProduct;
 import estoque_service.repository.ProductRepository;
 
 @Service
-public class EstoqueListener {
+public class StockListener {
 
     @Autowired
     private ProductRepository productRepository;
 
     @Autowired
-    private ObjectMapper objectMapper;    @KafkaListener(topics = "product-topic", groupId = "estoque-group")
+    private ObjectMapper objectMapper;
+
+    @KafkaListener(topics = "product-topic", groupId = "estoque-group")
     public void handleProductCreation(String productJson) {
-        System.out.println("Received from Kafka: " + productJson);
         try {
             ProductDTO productDTO = objectMapper.readValue(productJson, ProductDTO.class);
             
-            StockProduct product = new StockProduct();
-            product.setId(productDTO.getId());
-            product.setName(productDTO.getName());
-            product.setDescription(productDTO.getDescription());
-            product.setPrice(productDTO.getPrice());
-            product.setQuantity(productDTO.getQuantity());
+            StockProduct product = productRepository.findById(productDTO.id())
+                .orElse(new StockProduct());
             
+            product.setName(productDTO.name());
+            product.setPrice(productDTO.price());
+            product.setQuantity(productDTO.quantity());
+
             productRepository.save(product);
             System.out.println("Product saved in estoque-service with ID: " + product.getId());
         } catch (JsonProcessingException e) {

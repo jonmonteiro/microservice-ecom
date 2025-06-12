@@ -12,7 +12,7 @@ import venda_service.repository.ProductRepository;
 
 @RestController
 @RequestMapping("/api")
-public class VendaController {
+public class SaleController {
     @Autowired
     KafkaTemplate<String, String> kafkaTemplate;
 
@@ -23,12 +23,13 @@ public class VendaController {
     ObjectMapper objectMapper;
 
     @PostMapping("/products")
-    public ResponseEntity<SaleProduct> createProduct(@RequestBody ProductDTO product) throws JsonProcessingException {
+    public ResponseEntity<SaleProduct> createProduct(@RequestBody ProductDTO productDTO) throws JsonProcessingException {
         SaleProduct saleProduct = new SaleProduct();
-        saleProduct.setId(product.id());
-        saleProduct.setName(product.name());
-        saleProduct.setPrice(product.price());
-        saleProduct.setQuantity(product.quantity());
+
+        saleProduct.setId(productDTO.id());
+        saleProduct.setName(productDTO.name());
+        saleProduct.setPrice(productDTO.price());
+        saleProduct.setQuantity(productDTO.quantity());
 
         SaleProduct savedProduct = productRepository.save(saleProduct);
 
@@ -37,5 +38,4 @@ public class VendaController {
         
         return ResponseEntity.ok(savedProduct);
     }
-
 }

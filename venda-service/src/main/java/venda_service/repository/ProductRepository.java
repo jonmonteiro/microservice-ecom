@@ -6,5 +6,4 @@ import venda_service.entities.SaleProduct;
 
 public interface ProductRepository extends JpaRepository<SaleProduct, Long> {
 
-
 }
