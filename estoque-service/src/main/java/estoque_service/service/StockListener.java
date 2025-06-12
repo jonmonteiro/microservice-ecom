@@ -21,6 +21,7 @@ public class StockListener {
     @KafkaListener(topics = "product-topic", groupId = "estoque-group")
     public void handleProductCreation(String productJson) {
         try {
+            //Converts the received JSON string into a ProductDTO object
             ProductDTO productDTO = objectMapper.readValue(productJson, ProductDTO.class);
             
             StockProduct product = productRepository.findById(productDTO.id())
