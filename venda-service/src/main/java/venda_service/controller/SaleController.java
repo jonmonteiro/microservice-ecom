@@ -2,6 +2,7 @@ package venda_service.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -37,5 +38,45 @@ public class SaleController {
         kafkaTemplate.send("product-topic", productJson);
         
         return ResponseEntity.ok(savedProduct);
+    }
+
+    @DeleteMapping("/products/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) throws JsonProcessingException {
+        String deleteMessage = objectMapper.writeValueAsString(new ProductDTO(id, null, null, null));
+        kafkaTemplate.send("product-topic", deleteMessage);
+        
+        productRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/products/{id}")
+    public ResponseEntity<SaleProduct> updateProduct(@PathVariable Long id, @RequestBody ProductDTO productDTO) throws JsonProcessingException {
+        return productRepository.findById(id)
+            .map(product -> {
+                product.setName(productDTO.name());
+                product.setPrice(productDTO.price());
+                product.setQuantity(productDTO.quantity());
+                SaleProduct updatedProduct = productRepository.save(product);
+                try {
+                    String productJson = objectMapper.writeValueAsString(updatedProduct);
+                    kafkaTemplate.send("product-topic", productJson);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+                return ResponseEntity.ok(updatedProduct);
+            })
+            .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/products")
+    public ResponseEntity<List<SaleProduct>> getProducts() {
+        return ResponseEntity.ok(productRepository.findAll());
+    }
+
+    @GetMapping("/products/{id}")
+    public ResponseEntity<SaleProduct> getProduct(@PathVariable Long id) {
+        return ResponseEntity.ok(productRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Product not found with ID: " + id)));
+            
     }
 }

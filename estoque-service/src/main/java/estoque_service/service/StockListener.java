@@ -19,7 +19,7 @@ public class StockListener {
     private ObjectMapper objectMapper;
 
     @KafkaListener(topics = "product-topic", groupId = "estoque-group")
-    public void handleProductCreation(String productJson) {
+    public void handleCreateProduct(String productJson) {
         try {
             //Converts the received JSON string into a ProductDTO object
             ProductDTO productDTO = objectMapper.readValue(productJson, ProductDTO.class);
@@ -35,6 +35,17 @@ public class StockListener {
             System.out.println("Product saved in estoque-service with ID: " + product.getId());
         } catch (JsonProcessingException e) {
             System.err.println("Error processing product creation message: " + e.getMessage());
+        }
+    }
+
+    @KafkaListener(topics = "product-topic", groupId = "estoque-group")
+    public void handleDeleteProduct(String productJson) {
+        try {
+            ProductDTO productDTO = objectMapper.readValue(productJson, ProductDTO.class);
+            productRepository.deleteById(productDTO.id());
+            System.out.println("Product deleted in estoque-service with ID: " + productDTO.id());
+        } catch (JsonProcessingException e) {
+            System.err.println("Error processing product deletion message: " + e.getMessage());
         }
     }
 }

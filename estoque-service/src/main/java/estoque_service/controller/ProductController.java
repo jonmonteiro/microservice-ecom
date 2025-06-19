@@ -18,7 +18,6 @@ public class ProductController {
 
     @GetMapping("/products")
     public ResponseEntity<List<StockProduct>> listAllProducts() {
-        List<StockProduct> products = productRepository.findAll();
-        return ResponseEntity.ok(products);
+        return ResponseEntity.ok(productRepository.findAll());
     }
 }
