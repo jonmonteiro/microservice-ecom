@@ -25,12 +25,7 @@ public class SaleController {
 
     @PostMapping("/products")
     public ResponseEntity<SaleProduct> createProduct(@RequestBody ProductDTO productDTO) throws JsonProcessingException {
-        SaleProduct saleProduct = new SaleProduct();
-
-        saleProduct.setId(productDTO.id());
-        saleProduct.setName(productDTO.name());
-        saleProduct.setPrice(productDTO.price());
-        saleProduct.setQuantity(productDTO.quantity());
+        SaleProduct saleProduct = new SaleProduct(productDTO);
 
         SaleProduct savedProduct = productRepository.save(saleProduct);
 
