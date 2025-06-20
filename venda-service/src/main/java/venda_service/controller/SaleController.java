@@ -64,7 +64,7 @@ public class SaleController {
     }
 
     @GetMapping("/products")
-    public ResponseEntity<List<SaleProduct>> getProducts() {
+    public ResponseEntity<List<SaleProduct>> getAllProducts() {
         return ResponseEntity.ok(productRepository.findAll());
     }
 
