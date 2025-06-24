@@ -8,6 +8,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import venda_service.dto.ProductDTO;
 
 @Entity
 @Getter
@@ -21,4 +22,10 @@ public class SaleProduct {
     private String name;
     private Double price;
     private Integer quantity;
+
+    public SaleProduct(ProductDTO productDTO) {
+        this.name = productDTO.name();
+        this.price = productDTO.price();
+        this.quantity = productDTO.quantity();
+    }
 }

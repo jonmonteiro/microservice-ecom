@@ -10,15 +10,14 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/api")
 public class ProductController {
 
     @Autowired
     private ProductRepository productRepository;
 
-    @GetMapping
+    @GetMapping("/products")
     public ResponseEntity<List<StockProduct>> listAllProducts() {
-        List<StockProduct> products = productRepository.findAll();
-        return ResponseEntity.ok(products);
+        return ResponseEntity.ok(productRepository.findAll());
     }
 }
